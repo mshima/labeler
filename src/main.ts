@@ -3,7 +3,7 @@ import * as github from '@actions/github';
 import * as yaml from 'js-yaml';
 import {Minimatch} from 'minimatch';
 
-async function run() {
+async function run(): Promise<void> {
   try {
     const token = core.getInput('repo-token', {required: true});
     const configPath = core.getInput('configuration-path', {required: true});
