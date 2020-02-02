@@ -64,32 +64,28 @@ async function processPR(
   configPath: string,
   notFoundLabel: string
 ): Promise<boolean> {
-  try {
-    core.debug(`fetching changed files for pr #${prNumber}`);
-    const changedFiles: string[] = await getChangedFiles(client, prNumber);
-    const labelGlobs: Map<string, string[]> = await getLabelGlobs(
-      client,
-      configPath
-    );
+  core.debug(`fetching changed files for pr #${prNumber}`);
+  const changedFiles: string[] = await getChangedFiles(client, prNumber);
+  const labelGlobs: Map<string, string[]> = await getLabelGlobs(
+    client,
+    configPath
+  );
 
-    const labels: string[] = [];
-    for (const [label, globs] of labelGlobs.entries()) {
-      core.debug(`processing ${label}`);
-      if (checkGlobs(changedFiles, globs)) {
-        labels.push(label);
-      }
+  const labels: string[] = [];
+  for (const [label, globs] of labelGlobs.entries()) {
+    core.debug(`processing ${label}`);
+    if (checkGlobs(changedFiles, globs)) {
+      labels.push(label);
     }
+  }
 
-    if (notFoundLabel && labels.length === 0) {
-      labels.push(notFoundLabel);
-    }
+  if (notFoundLabel && labels.length === 0) {
+    labels.push(notFoundLabel);
+  }
 
-    if (labels.length > 0) {
-      await addLabels(client, prNumber, labels);
-      return true;
-    }
-  } catch (error) {
-    core.warning(error.message);
+  if (labels.length > 0) {
+    await addLabels(client, prNumber, labels);
+    return true;
   }
   return false;
 }
